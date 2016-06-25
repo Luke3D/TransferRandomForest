@@ -1,47 +1,47 @@
 Timer unit: 1e-06 s
 
-Total time: 0.00533 s
-File: <ipython-input-86-eb6a69bc8d78>
-Function: best_splitting_feature at line 88
+Total time: 0.002739 s
+File: <ipython-input-17-da71a81452de>
+Function: best_splitting_feature at line 93
 
 Line #      Hits         Time  Per Hit   % Time  Line Contents
 ==============================================================
-    88                                           def best_splitting_feature(X, y, Nbins):
-    89                                                   
-    90         1           13     13.0      0.2      best_feature = None # Keep track of the best feature 
-    91         1            1      1.0      0.0      best_threshold = None
-    92         1            1      1.0      0.0      best_I = -1     # Keep track of the best info gain so far 
-    93                                           
-    94                                               #the number of data points in the parent node
-    95         1            3      3.0      0.1      num_data_points = y.shape[0]
-    96                                               
-    97                                               #the entropy of the parent node
-    98         1          385    385.0      7.2      Hy = entropy(y)
-    99                                               
-   100                                               # Loop through each feature to consider splitting on that feature
-   101        29           24      0.8      0.5      for feature in range(X.shape[1]):
-   102                                                   
-   103        28           60      2.1      1.1          fvals = X[:,feature]
-   104        28          938     33.5     17.6          fvals = np.sort(fvals)  #sorting the values
-   105        28           26      0.9      0.5          if num_data_points > Nbins:            
-   106        28          245      8.8      4.6              fvals = fvals[range(0,num_data_points,Nbins)]
+    93                                           def best_splitting_feature(X, y, Nbins):
+    94                                                   
+    95         1            2      2.0      0.1      best_feature = None # Keep track of the best feature 
+    96         1            1      1.0      0.0      best_threshold = None
+    97         1            0      0.0      0.0      best_I = -1     # Keep track of the best info gain so far 
+    98                                           
+    99                                               #the number of data points in the parent node
+   100         1            2      2.0      0.1      num_data_points = y.shape[0]
+   101                                               
+   102                                               #the entropy of the parent node
+   103         1          319    319.0     11.6      Hy = entropy(y)
+   104                                               
+   105                                               # Loop through each feature to consider splitting on that feature
+   106        29           22      0.8      0.8      for feature in range(X.shape[1]):
    107                                                   
-   108                                                   #loop through all values of current feature to find the best split
-   109       308          348      1.1      6.5          for threshold in fvals:
-   110                                           
-   111                                                       # The left split will have all data points where the feature value is smaller than threshold
-   112       280          983      3.5     18.4              ind_left = X[:,feature] < threshold
-   113                                                        # The right split will have all data points where the feature value is larger or equal
-   114       280          828      3.0     15.5              ind_right = X[:,feature] >= threshold
-   115                                                       
-   116                                                       #compute info-gain for current feature and threshold split
-   117       280         1247      4.5     23.4              I = infogain(Hy,len(y),y[ind_left],y[ind_right])
-   118                                                       
-   119                                                       # If this is the best error we have found so far, store the feature as best_feature
-   120                                                       # the threshold as the best threshold and the error as best_error
-   121       280          227      0.8      4.3              if I > best_I:
-   122         1            0      0.0      0.0                  best_feature = feature
-   123         1            1      1.0      0.0                  best_threshold = threshold
-   124         1            0      0.0      0.0                  best_I = I
-   125                                                   
-   126         1            0      0.0      0.0      return best_feature, best_threshold # Return the best feature and threshold
+   108        28           28      1.0      1.0          fvals = X[:,feature]
+   109                                                   #fvals = np.sort(fvals)  #sorting the values
+   110        28           12      0.4      0.4          if num_data_points > Nbins:            
+   111        28          128      4.6      4.7              fvals = fvals[range(0,num_data_points,Nbins)]
+   112                                                   
+   113                                                   #loop through all values of current feature to find the best split
+   114       308          248      0.8      9.1          for threshold in fvals:
+   115                                           
+   116                                                       # The left split will have all data points where the feature value is smaller than threshold
+   117       280          679      2.4     24.8              ind_left = X[:,feature] < threshold
+   118                                                        # The right split will have all data points where the feature value is larger or equal
+   119                                                       #ind_right = X[:,feature] >= threshold
+   120                                                       
+   121                                                       #compute info-gain for current feature and threshold split
+   122       280         1126      4.0     41.1              I = infogain(Hy,len(y),y[ind_left],y[~ind_left])
+   123                                                       
+   124                                                       # If this is the best error we have found so far, store the feature as best_feature
+   125                                                       # the threshold as the best threshold and the error as best_error
+   126       280          167      0.6      6.1              if I > best_I:
+   127         1            1      1.0      0.0                  best_feature = feature
+   128         1            1      1.0      0.0                  best_threshold = threshold
+   129         1            2      2.0      0.1                  best_I = I
+   130                                                   
+   131         1            1      1.0      0.0      return best_feature, best_threshold # Return the best feature and threshold
