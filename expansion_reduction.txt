@@ -1,0 +1,41 @@
+Timer unit: 1e-06 s
+
+Total time: 4.74605 s
+File: <ipython-input-4-b57ab910177e>
+Function: expansion_reduction at line 41
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    41                                           def expansion_reduction(tree,XT1,yT1,XT2,yT2,max_depth=2,C=-1,min_node_size = 5):
+    42                                           
+    43                                               #Tree = tree #a copy of the tree
+    44                                               
+    45                                               #finding the leaf where each target datapoint ends up
+    46         1        18062  18062.0      0.4      leavesData1 = map(lambda x: datapath(tree,x), XT1)
+    47         1        17682  17682.0      0.4      leavesData2 = map(lambda x: datapath(tree,x), XT2)
+    48                                                       
+    49         1          348    348.0      0.0      Uleaves1 = np.unique(leavesData1)  #the path to each leaf followed by data1
+    50         1          159    159.0      0.0      Uleaves2 = np.unique(leavesData2)  #the path to each leaf followed by data2
+    51         1           43     43.0      0.0      Uleaves = list(set(Uleaves1) & set(Uleaves2)) #leaves reached by both data1 and data2
+    52                                                       
+    53                                               #expanding each leaf on the 1st bootstrap replica of target data
+    54        48           85      1.8      0.0      for i in Uleaves:
+    55        47         4612     98.1      0.1          ind_data1 = leavesData1==i #indices of datapoints for each leaf
+    56                                                   #set the current depth of subtree to 1 to prevent inferring the number of classes from the code
+    57        47      4677458  99520.4     98.6          Exp_tree = decision_tree_create(XT1[ind_data1,:],yT1[ind_data1],XT1.shape[1], C, min_node_size, Nbins = 10, Verbose = False, current_depth=1,max_depth=max_depth)
+    58                                           
+    59                                                   #Is this a good expansion?: computes classification error at each leaf for Data T2
+    60        47         4761    101.3      0.1          ind_data2 = leavesData2==i
+    61        47         2893     61.6      0.1          Err_leavesT2 = intermediate_node_num_mistakes(yT2[ind_data2])/len(yT2[ind_data2])
+    62                                           
+    63                                                   #error at the current subtree on Data T2
+    64        47        12025    255.9      0.3          Err_subtreeT2 = evaluate_classification_error_tree(Exp_tree, XT2[ind_data2], yT2[ind_data2])
+    65                                                   
+    66                                                   #comparing the error of the subtree with that at the leaf node of the original tree
+    67        47           93      2.0      0.0          if Err_subtreeT2 < Err_leavesT2:
+    68        12         3570    297.5      0.1              tree = mergetrees(tree,i,Exp_tree)
+    69        12          951     79.2      0.0              print 'merging successful!'
+    70                                                   else:
+    71        35         3308     94.5      0.1              print 'no merging: discard subtree'
+    72                                               
+    73         1            1      1.0      0.0      return tree
