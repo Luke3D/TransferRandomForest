@@ -1,0 +1,46 @@
+Timer unit: 1e-06 s
+
+Total time: 2.96219 s
+File: <ipython-input-8-a03dbed31eb6>
+Function: expansion_reduction at line 43
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    43                                           def expansion_reduction(tree,XT1,yT1,XT2,yT2,max_depth=2,C=-1,min_node_size = 5):
+    44                                           
+    45                                               #Tree = tree #a copy of the tree
+    46                                               
+    47                                               #finding the leaf where each target datapoint ends up
+    48         1        17620  17620.0      0.6      leavesData1 = map(lambda x: datapath(tree,x), XT1)
+    49         1        17126  17126.0      0.6      leavesData2 = map(lambda x: datapath(tree,x), XT2)
+    50                                                       
+    51         1          242    242.0      0.0      Uleaves1 = np.unique(leavesData1)  #the path to each leaf followed by data1
+    52         1          167    167.0      0.0      Uleaves2 = np.unique(leavesData2)  #the path to each leaf followed by data2
+    53         1           18     18.0      0.0      Uleaves = list(set(Uleaves1) & set(Uleaves2)) #leaves reached by both data1 and data2
+    54                                                       
+    55                                               #expanding each leaf on the 1st bootstrap replica of target data
+    56         9           16      1.8      0.0      for i in Uleaves:
+    57         8          710     88.8      0.0          ind_data1 = leavesData1==i #indices of datapoints for each leaf
+    58                                                   #set the current depth of subtree to 1 to prevent inferring the number of classes from the code
+    59                                                   #estimator = DecisionTreeClassifier()
+    60                                                   #estimator.fit(XT1[ind_data1,:],yT1[ind_data1])
+    61                                                   #tree1 = convert_from_scikit_learn_to_dic(estimator)
+    62                                           
+    63                                                   
+    64         8      2914715 364339.4     98.4          Exp_tree = decision_tree_create(XT1[ind_data1,:],yT1[ind_data1],XT1.shape[1], C, min_node_size, Nbins = 10, Verbose = False, current_depth=1,max_depth=max_depth)
+    65                                           
+    66                                                   #Is this a good expansion?: computes classification error at each leaf for Data T2
+    67         8          728     91.0      0.0          ind_data2 = leavesData2==i
+    68         8          518     64.8      0.0          Err_leavesT2 = intermediate_node_num_mistakes(yT2[ind_data2])/len(yT2[ind_data2])
+    69                                           
+    70                                                   #error at the current subtree on Data T2
+    71         8         7788    973.5      0.3          Err_subtreeT2 = evaluate_classification_error_tree(Exp_tree, XT2[ind_data2], yT2[ind_data2])
+    72                                                   
+    73                                                   #comparing the error of the subtree with that at the leaf node of the original tree
+    74         8           15      1.9      0.0          if Err_subtreeT2 < Err_leavesT2:
+    75         8         1664    208.0      0.1              tree = mergetrees(tree,i,Exp_tree)
+    76         8          858    107.2      0.0              print 'merging successful!'
+    77                                                   else:
+    78                                                       print 'no merging: discard subtree'
+    79                                               
+    80         1            1      1.0      0.0      return tree
