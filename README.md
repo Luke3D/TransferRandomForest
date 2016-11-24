@@ -35,4 +35,5 @@ The example notebook shows the application of the algorithm to the Activity reco
  - [COGC](http://cogc.ir/) and [Ottobock](http://www.ottobockus.com/) for funding
  - Package is developed in [Konrad Kording's Lab](http://kordinglab.com/) at Northwestern University
 
- ## License MIT License Copyright (c) 2016 Luca Lonini and Roozbeh Farhoodi
+## License
+MIT License Copyright (c) 2016 Luca Lonini and Roozbeh Farhoodi
